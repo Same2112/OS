@@ -1,0 +1,61 @@
+
+
+
+
+
+.file	"main.c"
+	.text  / Объявление секции текста (исполняемый код)
+	.section	.rodata   // Объявление секции только для чтения (константы) 
+	.align 8  // Выравнивание адресов на границу, кратную 8
+
+.LC0:
+	.string	"Fibonacci element number %d= %lld\n"   // Константа для форматирования вывода
+	.text  // Объявление секции текста (исполняемый код)
+	.globl	main  // Глобальное объявление функции main
+	.type	main, @function  // Объявление типа функции main
+main:
+.LFB0:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	$11, -4(%rbp)  // Инициализация переменной с числом 11
+	movl	-4(%rbp), %eax  // Загрузка значения переменной в регистр eax
+	movl	%eax, %edi  // Передача значения в качестве аргумента в функцию printf
+	call	fibonacci@PLT  // Вызов функции fibonacci
+	movq	%rax, %rdx  // Сохранение возвращаемого значения в регистр rdx
+	movl	-4(%rbp), %eax  // Загрузка значения переменной обратно в регистр eax
+	movl	%eax, %esi  // Передача значения в качестве аргумента в функцию printf
+	leaq	.LC0(%rip), %rax  // Загрузка адреса строки форматирования в регистр rax
+	movq	%rax, %rdi  // Передача адреса строки в качестве аргумента в функцию printf
+	movl	$0, %eax  // Установка значения в eax для указания на успешное выполнение функции printf
+	call	printf@PLT  // Вызов функции printf
+	movl	$0, %eax  // Установка значения в eax для указания на успешное завершение программы
+	leave  // Освобождение кадра стека и возврат из функции
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc  // Указывает конец процедуры в фрейме данных
+.LFE0:
+	.size	main, .-main  // Определение размера функции main
+	.ident	"GCC: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"   // Идентификатор компилятора и версия
+	.section	.note.GNU-stack,"",@progbits  // Стандартный стек GNU
+	.section	.note.gnu.property,"a"  // Заголовок свойств GNU
+	.align 8  Выравнивание адресов на границу, кратную 8
+	.long	1f - 0f  
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
